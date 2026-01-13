@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Time-Travel Love Capsule</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Import Map for Modules -->
+    <script type="importmap">
+      {
+        "imports": {
+          "react": "https://esm.sh/react@18.2.0",
+          "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+          "lucide-react": "https://esm.sh/lucide-react@0.300.0",
+          "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
+          "firebase/auth": "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js",
+          "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"
+        }
+      }
+    </script>
+
+    <!-- Babel for in-browser JSX transformation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .font-serif {
+        font-family: "Playfair Display", serif;
+      }
+
+      /* Custom Animations */
+      @keyframes spin-slow {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .animate-spin-slow {
+        animation: spin-slow 12s linear infinite;
+      }
+    </style>
+  </head>
+  <body class="bg-black text-white overflow-x-hidden">
+    <div id="root"></div>
+
+    <script type="text/babel" data-type="module">
+      import React, { useState, useEffect, useRef, useMemo } from "react";
+      import { createRoot } from "react-dom/client";
+      import {
+        Clock,
+        Heart,
+        Star,
+        Book,
+        Zap,
+        Flower2,
+        ArrowLeft,
+        Mic,
+        Image as ImageIcon,
+        Save,
+        Lock,
+        Unlock,
+        Play,
+        Pause,
+        Music,
+        Send,
+        Sparkles,
+        PenTool,
+      } from "lucide-react";
+
+      import { initializeApp } from "firebase/app";
+      import {
+        getAuth,
+        signInAnonymously,
+        onAuthStateChanged,
+        signInWithCustomToken,
+      } from "firebase/auth";
+      import {
+        getFirestore,
+        collection,
+        doc,
+        setDoc,
+        onSnapshot,
+        serverTimestamp,
+      } from "firebase/firestore";
+
+      // --- Firebase Configuration & Init ---
+      // In a real deployment, these are provided by the environment.
+      // We use placeholders here to prevent crash if not present.
+      const firebaseConfig = JSON.parse(
+        typeof window.__firebase_config !== "undefined"
+          ? window.__firebase_config
+          : "{}"
+      );
+      const appId =
+        typeof window.__app_id !== "undefined"
+          ? window.__app_id
+          : "default-app-id";
+
+      let auth, db;
+      let firebaseInitialized = false;
+
+      try {
+        if (Object.keys(firebaseConfig).length > 0) {
+          const app = initializeApp(firebaseConfig);
+          auth = getAuth(app);
+          db = getFirestore(app);
+          firebaseInitialized = true;
+        }
+      } catch (e) {
+        console.warn(
+          "Firebase init failed (likely missing config), falling back to local state."
+        );
+      }
+
+      // --- Visual & Theme Constants ---
+      const THEMES = {
+        STARFIELD: "starfield",
+        STORYBOOK: "storybook",
+        ANIME: "anime",
+        GARDEN: "garden",
+      };
+
+      const HOUR_THEME_MAP = {
+        1: THEMES.STARFIELD,
+        2: THEMES.STARFIELD,
+        3: THEMES.STARFIELD,
+        4: THEMES.STORYBOOK,
+        5: THEMES.STORYBOOK,
+        6: THEMES.STORYBOOK,
+        7: THEMES.ANIME,
+        8: THEMES.ANIME,
+        9: THEMES.ANIME,
+        10: THEMES.GARDEN,
+        11: THEMES.GARDEN,
+        12: THEMES.GARDEN,
+      };
+
+      const DEFAULT_MEMORIES = {
+        1: { type: "text", content: "The night we met under the stars..." },
+        4: { type: "text", content: "Our story began on a rainy Tuesday." },
+        7: { type: "text", content: "POV: You stole my fries." },
+        10: { type: "text", content: "This garden grows with us." },
+      };
+
+      // --- Helper Components ---
+
+      // 1. Particle Effects for Atmosphere
+      const Particles = ({ theme }) => {
+        const count = theme === THEMES.STARFIELD ? 50 : 20;
+        // Create static array for map to work
+        const particles = Array.from({ length: count });
+
+        return (
+          <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+            {particles.map((_, i) => {
+              const style = {
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDuration: `${Math.random() * 5 + 5}s`,
+                animationDelay: `${Math.random() * 5}s`,
+              };
+              return (
+                <div
+                  key={i}
+                  className={`absolute rounded-full animate-pulse
+                            ${
+                              theme === THEMES.STARFIELD
+                                ? "w-1 h-1 bg-white opacity-60"
+                                : ""
+                            }
+                            ${
+                              theme === THEMES.GARDEN
+                                ? "w-2 h-2 bg-pink-300 opacity-40 animate-bounce"
+                                : ""
+                            }
+                            ${theme === THEMES.STORYBOOK ? "hidden" : ""}
+                            ${
+                              theme === THEMES.ANIME
+                                ? "w-2 h-2 bg-yellow-400 rotate-45"
+                                : ""
+                            }
+                            `}
+                  style={style}
+                />
+              );
+            })}
+          </div>
+        );
+      };
+
+      // 2. The Memory Capsule Modal
+      const MemoryCapsule = ({
+        isOpen,
+        onClose,
+        hour,
+        memory,
+        onSave,
+        theme,
+      }) => {
+        const [isEditing, setIsEditing] = useState(false);
+        const [content, setContent] = useState(memory?.content || "");
+        const [isRecording, setIsRecording] = useState(false);
+
+        useEffect(() => {
+          setContent(memory?.content || "");
+          setIsEditing(!memory?.content);
+        }, [memory, hour]);
+
+        if (!isOpen) return null;
+
+        const handleSave = () => {
+          onSave(hour, content);
+          setIsEditing(false);
+        };
+
+        const getThemeStyles = () => {
+          switch (theme) {
+            case THEMES.STARFIELD:
+              return "bg-slate-900 border-blue-500 text-blue-100 font-mono";
+            case THEMES.STORYBOOK:
+              return "bg-[#f4e4bc] border-amber-800 text-amber-900 font-serif";
+            case THEMES.ANIME:
+              return "bg-white border-black border-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-black font-sans uppercase tracking-tighter";
+            case THEMES.GARDEN:
+              return "bg-green-50 border-emerald-400 text-emerald-800 font-sans";
+            default:
+              return "bg-white text-gray-900";
+          }
+        };
+
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <div
+              className={`relative w-full max-w-md p-6 rounded-xl border-2 shadow-2xl transition-all ${getThemeStyles()}`}
+            >
+              {/* Header */}
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-bold flex items-center gap-2">
+                  {theme === THEMES.STARFIELD && <Star size={20} />}
+                  {theme === THEMES.STORYBOOK && <Book size={20} />}
+                  {theme === THEMES.ANIME && <Zap size={20} />}
+                  {theme === THEMES.GARDEN && <Flower2 size={20} />}
+                  Hour {hour} Capsule
+                </h3>
+                <button onClick={onClose} className="hover:opacity-70">
+                  <ArrowLeft size={20} />
+                </button>
+              </div>
+
+              {/* Content Area */}
+              <div className="min-h-[200px] mb-4 relative">
+                {isEditing ? (
+                  <textarea
+                    className="w-full h-40 p-3 bg-opacity-20 bg-black/5 rounded-md resize-none outline-none focus:ring-2 ring-current"
+                    placeholder="Write a memory for this hour..."
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                  />
+                ) : (
+                  <div className="prose prose-sm max-w-none">
+                    <p className="whitespace-pre-wrap text-lg leading-relaxed">
+                      {content || "No memory recorded yet."}
+                    </p>
+                  </div>
+                )}
+
+                {/* Mock Voice Recorder */}
+                {isEditing && (
+                  <div className="mt-4 flex items-center gap-4 p-2 rounded-lg bg-black/5">
+                    <button
+                      onClick={() => setIsRecording(!isRecording)}
+                      className={`p-2 rounded-full transition-colors ${
+                        isRecording
+                          ? "bg-red-500 text-white animate-pulse"
+                          : "bg-gray-200 text-gray-700"
+                      }`}
+                    >
+                      <Mic size={18} />
+                    </button>
+                    {isRecording ? (
+                      <div className="flex-1 h-8 flex items-center gap-1">
+                        {[...Array(10)].map((_, i) => (
+                          <div
+                            key={i}
+                            className="w-1 bg-current animate-bounce"
+                            style={{
+                              height: Math.random() * 20 + 5 + "px",
+                              animationDelay: i * 0.1 + "s",
+                            }}
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="text-xs opacity-70">
+                        Hold to add voice note (Mock)
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Footer Actions */}
+              <div className="flex justify-end gap-3">
+                {isEditing ? (
+                  <button
+                    onClick={handleSave}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-current/10 hover:bg-current/20 font-bold"
+                  >
+                    <Save size={18} /> Save Capsule
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-current/10 hover:bg-current/20 font-bold"
+                  >
+                    <PenTool size={18} /> Edit
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      // 3. The Portals (Theme Wrappers)
+      const StarfieldPortal = ({ children }) => (
+        <div className="min-h-screen bg-slate-900 text-white relative flex flex-col items-center justify-center overflow-hidden">
+          <Particles theme={THEMES.STARFIELD} />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-900/40 via-slate-900 to-slate-900"></div>
+          <div className="z-10 w-full max-w-2xl px-6">
+            <h1 className="text-4xl font-light tracking-[0.2em] text-center mb-8 text-blue-200 drop-shadow-[0_0_10px_rgba(100,200,255,0.5)]">
+              CONSTELLATION
+            </h1>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+              {children}
+            </div>
+          </div>
+        </div>
+      );
+
+      const StorybookPortal = ({ children }) => (
+        <div className="min-h-screen bg-[#f3e5be] relative flex flex-col items-center py-12 px-4 font-serif text-amber-900 overflow-hidden">
+          {/* Page Texture Overlay */}
+          <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/aged-paper.png')] pointer-events-none"></div>
+          <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-black/10 to-transparent"></div>
+
+          <div className="z-10 w-full max-w-3xl border-x-2 border-amber-900/10 min-h-[80vh] bg-white/40 p-8 shadow-xl relative">
+            <h1 className="text-5xl text-center mb-12 italic font-bold text-amber-800 drop-shadow-sm decoration-wavy">
+              Chapter One
+            </h1>
+            <div className="columns-1 md:columns-2 gap-8 space-y-8">
+              {children}
+            </div>
+            <div className="absolute bottom-4 right-4 opacity-50 text-sm">
+              Page 1 of ∞
+            </div>
+          </div>
+        </div>
+      );
+
+      const AnimePortal = ({ children }) => (
+        <div className="min-h-screen bg-yellow-50 relative flex flex-col items-center py-8 px-4 font-sans overflow-hidden">
+          {/* Halftone Pattern */}
+          <div
+            className="absolute inset-0 opacity-10"
+            style={{
+              backgroundImage: "radial-gradient(#000 1px, transparent 1px)",
+              backgroundSize: "20px 20px",
+            }}
+          ></div>
+
+          <h1 className="z-10 text-6xl font-black italic text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 mb-8 transform -rotate-2 drop-shadow-[4px_4px_0_#000]">
+            MEMORIES!!
+          </h1>
+
+          <div className="z-10 w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-[200px]">
+            {children}
+          </div>
+        </div>
+      );
+
+      const GardenPortal = ({ children }) => (
+        <div className="min-h-screen bg-gradient-to-b from-sky-100 to-emerald-100 relative flex flex-col items-center justify-center overflow-hidden">
+          <Particles theme={THEMES.GARDEN} />
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-emerald-200 blur-xl opacity-50"></div>
+
+          <div className="z-10 w-full max-w-4xl px-4 text-center">
+            <h1 className="text-4xl font-serif text-emerald-800 mb-12 tracking-wide flex items-center justify-center gap-3">
+              <Flower2 className="animate-pulse" /> The Enchanted Garden{" "}
+              <Flower2 className="animate-pulse" />
+            </h1>
+            <div className="flex flex-wrap justify-center gap-12">
+              {children}
+            </div>
+          </div>
+        </div>
+      );
+
+      // --- Main Application Component ---
+
+      function TimeTravelLoveCapsule() {
+        const [view, setView] = useState("clock"); // clock, portal, finale
+        const [activeHour, setActiveHour] = useState(null);
+        const [activeTheme, setActiveTheme] = useState(null);
+        const [user, setUser] = useState(null);
+        const [memories, setMemories] = useState(DEFAULT_MEMORIES);
+        const [isModalOpen, setIsModalOpen] = useState(false);
+        const [tickSound] = useState(true);
+        const [isFinaleUnlocked, setIsFinaleUnlocked] = useState(false); // State moved here
+
+        // --- Auth & Data Loading ---
+        useEffect(() => {
+          const initAuth = async () => {
+            if (!firebaseInitialized) {
+              // Mock User for Demo Mode
+              setUser({ uid: "demo-user" });
+              return;
+            }
+
+            // Get token from global scope if available (provided by environment)
+            const initialToken =
+              typeof window.__initial_auth_token !== "undefined"
+                ? window.__initial_auth_token
+                : null;
+
+            if (initialToken) {
+              await signInWithCustomToken(auth, initialToken);
+            } else {
+              await signInAnonymously(auth);
+            }
+          };
+
+          initAuth();
+          if (firebaseInitialized) {
+            const unsubscribe = onAuthStateChanged(auth, (u) => setUser(u));
+            return () => unsubscribe();
+          }
+        }, []);
+
+        // Fetch Memories
+        useEffect(() => {
+          if (!user || !firebaseInitialized) return;
+
+          const unsub = onSnapshot(
+            collection(db, "artifacts", appId, "users", user.uid, "memories"),
+            (snapshot) => {
+              const loaded = {};
+              snapshot.docs.forEach((doc) => {
+                loaded[doc.id] = doc.data();
+              });
+              setMemories((prev) => ({ ...prev, ...loaded }));
+            },
+            (err) => console.error("Firestore error:", err)
+          );
+
+          return () => unsub();
+        }, [user]);
+
+        // Save Memory
+        const saveMemory = async (hour, content) => {
+          // Optimistic update
+          setMemories((prev) => ({
+            ...prev,
+            [hour]: { ...prev[hour], content },
+          }));
+
+          if (firebaseInitialized && user) {
+            try {
+              await setDoc(
+                doc(
+                  db,
+                  "artifacts",
+                  appId,
+                  "users",
+                  user.uid,
+                  "memories",
+                  hour.toString()
+                ),
+                {
+                  content,
+                  theme: HOUR_THEME_MAP[hour],
+                  updatedAt: serverTimestamp(),
+                }
+              );
+            } catch (e) {
+              console.error("Save failed", e);
+            }
+          }
+        };
+
+        // --- Clock Logic ---
+        const handleHourClick = (hour) => {
+          setActiveHour(hour);
+          setActiveTheme(HOUR_THEME_MAP[hour]);
+          setView("portal");
+        };
+
+        const handleReturn = () => {
+          setView("clock");
+          setActiveHour(null);
+        };
+
+        // --- Renderers ---
+
+        const renderClockFace = () => {
+          const hours = [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+
+          return (
+            <div className="relative w-full h-screen bg-neutral-900 flex flex-col items-center justify-center overflow-hidden">
+              {/* Background Atmosphere */}
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-amber-900/20 via-neutral-900 to-neutral-950"></div>
+
+              <div className="z-10 text-amber-500/80 mb-8 font-serif italic text-lg tracking-widest animate-pulse">
+                Select an hour to travel
+              </div>
+
+              {/* The Clock */}
+              <div className="relative w-80 h-80 md:w-96 md:h-96 rounded-full border-4 border-amber-700/50 shadow-[0_0_50px_rgba(251,191,36,0.1)] bg-neutral-800 flex items-center justify-center transition-all hover:scale-105 duration-700">
+                {/* Inner details */}
+                <div className="absolute inset-4 rounded-full border border-amber-800/30"></div>
+                <div className="absolute w-3 h-3 bg-amber-500 rounded-full z-20 shadow-[0_0_10px_rgba(245,158,11,1)]"></div>
+
+                {/* Hands (Animated) */}
+                <div
+                  className="absolute w-1 h-32 bg-gradient-to-t from-amber-600 to-transparent origin-bottom left-1/2 -ml-0.5 -mt-32 rounded-full animate-[spin_60s_linear_infinite] opacity-80"
+                  style={{ transformOrigin: "bottom center" }}
+                ></div>
+                <div
+                  className="absolute w-1.5 h-24 bg-gradient-to-t from-amber-400 to-transparent origin-bottom left-1/2 -ml-0.75 -mt-24 rounded-full animate-[spin_720s_linear_infinite]"
+                  style={{ transformOrigin: "bottom center" }}
+                ></div>
+
+                {/* Hour Markers */}
+                {hours.map((h, i) => {
+                  const angle = i * 30 - 90; // Start at 12
+                  const radius = 140; // Distance from center
+                  // Convert polar to cartesian
+                  const x = radius * Math.cos((angle * Math.PI) / 180);
+                  const y = radius * Math.sin((angle * Math.PI) / 180);
+
+                  const hasMemory = memories[h];
+                  const theme = HOUR_THEME_MAP[h];
+
+                  return (
+                    <button
+                      key={h}
+                      onClick={() => handleHourClick(h)}
+                      className={`absolute group w-12 h-12 -ml-6 -mt-6 rounded-full flex items-center justify-center transition-all duration-300
+                            ${
+                              hasMemory
+                                ? "bg-amber-900/40 text-amber-200 shadow-[0_0_15px_rgba(245,158,11,0.3)] hover:bg-amber-600 hover:text-white hover:scale-110"
+                                : "text-neutral-600 hover:text-amber-500 hover:scale-125"
+                            }
+                            `}
+                      style={{
+                        transform: `translate(${x}px, ${y}px)`, // Corrected from left/top to transform for cleaner centering
+                      }}
+                    >
+                      <span className="font-serif font-bold text-lg">{h}</span>
+
+                      {/* Tooltip Preview */}
+                      <div className="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-300 bottom-full mb-2 w-32 bg-black/80 text-xs text-amber-100 p-2 rounded text-center pointer-events-none backdrop-blur-md border border-amber-900/50 z-30">
+                        <div className="font-bold uppercase text-[10px] tracking-wider text-amber-500 mb-1">
+                          {theme}
+                        </div>
+                        {hasMemory ? "Memory Unlocked" : "Empty Void"}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Footer Controls */}
+              <div className="absolute bottom-8 flex gap-4 text-neutral-500">
+                <button
+                  onClick={() => setView("finale")}
+                  className="hover:text-amber-500 transition-colors flex items-center gap-2"
+                >
+                  <Lock size={16} /> Promise
+                </button>
+                <div className="flex items-center gap-2">
+                  <Music size={16} />
+                  <span className="text-xs">
+                    Sound {tickSound ? "On" : "Off"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          );
+        };
+
+        const renderPortalContent = () => {
+          // Filter memories/items relevant to this theme/hour
+          // For this MVP, we show the specific clickable "Trigger" for the active hour
+
+          const TriggerItem = () => {
+            const isUnlocked = memories[activeHour];
+
+            const content = (
+              <div
+                onClick={() => setIsModalOpen(true)}
+                className="cursor-pointer transition-transform hover:scale-105"
+              >
+                {activeTheme === THEMES.STARFIELD && (
+                  <div className="flex flex-col items-center gap-2 p-6 rounded-full border border-blue-500/30 bg-blue-900/20 hover:bg-blue-800/30 backdrop-blur-sm group">
+                    <Star
+                      className={`w-12 h-12 ${
+                        isUnlocked
+                          ? "text-yellow-200 fill-yellow-200"
+                          : "text-slate-600"
+                      } group-hover:animate-spin-slow`}
+                    />
+                    <span className="text-xs tracking-widest text-blue-300">
+                      HOUR {activeHour}
+                    </span>
+                  </div>
+                )}
+
+                {activeTheme === THEMES.STORYBOOK && (
+                  <div className="p-4 bg-white shadow-md rotate-1 hover:rotate-0 transition-transform border border-amber-200 max-w-xs">
+                    <div className="h-32 bg-amber-50 mb-3 flex items-center justify-center border-2 border-dashed border-amber-200">
+                      <ImageIcon className="text-amber-300 w-8 h-8" />
+                    </div>
+                    <p className="font-serif text-sm text-amber-900 text-center">
+                      {isUnlocked ? "Read Memory" : "Write Chapter"}
+                    </p>
+                  </div>
+                )}
+
+                {activeTheme === THEMES.ANIME && (
+                  <div className="bg-white border-4 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all h-full flex flex-col items-center justify-center bg-[url('https://www.transparenttextures.com/patterns/comic-dots.png')]">
+                    <div className="bg-yellow-300 px-3 py-1 text-black font-black text-xs border-2 border-black transform -rotate-3 mb-2">
+                      EPISODE {activeHour}
+                    </div>
+                    <p className="font-bold text-center leading-tight">
+                      {isUnlocked ? "REPLAY SCENE!" : "LOCKED SCENE"}
+                    </p>
+                  </div>
+                )}
+
+                {activeTheme === THEMES.GARDEN && (
+                  <div className="group relative flex flex-col items-center">
+                    <div className="absolute -inset-4 bg-green-400/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <Flower2
+                      className={`w-16 h-16 ${
+                        isUnlocked ? "text-pink-400" : "text-emerald-800/40"
+                      } drop-shadow-sm transition-colors duration-500`}
+                    />
+                    <div className="h-16 w-1 bg-emerald-700/50 mt-[-4px]"></div>
+                    <div className="w-12 h-6 rounded-t-full bg-emerald-600/60 transform -rotate-45 -mt-12 -ml-12"></div>
+                  </div>
+                )}
+              </div>
+            );
+
+            return content;
+          };
+
+          const Wrapper =
+            activeTheme === THEMES.STARFIELD
+              ? StarfieldPortal
+              : activeTheme === THEMES.STORYBOOK
+              ? StorybookPortal
+              : activeTheme === THEMES.ANIME
+              ? AnimePortal
+              : GardenPortal;
+
+          return (
+            <Wrapper>
+              {/* Navigation Back */}
+              <div className="fixed top-6 left-6 z-50">
+                <button
+                  onClick={handleReturn}
+                  className="bg-black/20 hover:bg-black/40 text-white backdrop-blur-md p-3 rounded-full transition-all"
+                >
+                  <ArrowLeft />
+                </button>
+              </div>
+
+              {/* The Content Trigger */}
+              <div className="col-span-full flex justify-center py-20">
+                <TriggerItem />
+              </div>
+
+              {/* Decorative elements based on theme to fill space */}
+              {activeTheme === THEMES.STARFIELD && (
+                <div className="col-span-full text-center text-blue-200/50 text-sm font-mono mt-12">
+                  COORDINATES: {Date.now()} // SECTOR {activeHour}
+                </div>
+              )}
+            </Wrapper>
+          );
+        };
+
+        const renderFinale = () => {
+          const memoryCount = Object.values(memories).filter(
+            (m) => m.content
+          ).length;
+          // For demo, we allow unlock if > 1 memory, or just force it manually
+          const isReady = memoryCount > 0;
+
+          if (isFinaleUnlocked) {
+            return (
+              <div className="min-h-screen bg-pink-50 flex flex-col items-center justify-center text-center p-6 relative overflow-hidden">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-pink-200 via-pink-50 to-white animate-pulse"></div>
+                <Particles theme={THEMES.GARDEN} /> {/* Reusing particles */}
+                <div className="z-10 bg-white/80 backdrop-blur-xl p-8 md:p-12 rounded-2xl shadow-2xl max-w-lg border border-pink-100">
+                  <Heart className="w-20 h-20 text-pink-500 mx-auto mb-6 animate-bounce fill-pink-500" />
+                  <h1 className="text-3xl md:text-4xl font-serif text-pink-900 mb-4">
+                    Our Promise
+                  </h1>
+                  <p className="text-lg text-gray-700 italic mb-8 leading-relaxed">
+                    "Through every timeline, every story, and every star in the
+                    sky, I promise to find you. Time is just a clock, but us? We
+                    are forever."
+                  </p>
+                  <div className="text-sm text-gray-400 uppercase tracking-widest">
+                    EST. {new Date().getFullYear()}
+                  </div>
+
+                  <button
+                    onClick={() => setView("clock")}
+                    className="mt-8 px-6 py-2 border-b-2 border-pink-300 text-pink-700 hover:text-pink-900 text-sm uppercase tracking-wide"
+                  >
+                    Close Capsule
+                  </button>
+                </div>
+              </div>
+            );
+          }
+
+          return (
+            <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center p-6 text-white">
+              <Lock className="w-16 h-16 text-gray-600 mb-6" />
+              <h2 className="text-2xl font-serif mb-2">
+                The Capsule is Locked
+              </h2>
+              <p className="text-gray-400 mb-8 max-w-md text-center">
+                You must traverse the timelines and collect memories to open the
+                final promise.
+              </p>
+
+              <div className="w-full max-w-xs bg-gray-800 rounded-full h-2 mb-8">
+                <div
+                  className="bg-amber-500 h-2 rounded-full transition-all duration-1000"
+                  style={{
+                    width: `${Math.min((memoryCount / 12) * 100, 100)}%`,
+                  }}
+                ></div>
+              </div>
+
+              <button
+                onClick={() =>
+                  isReady
+                    ? setIsFinaleUnlocked(true)
+                    : alert(
+                        "Collect more memories first! (Or just imagine you did for this demo)"
+                      )
+                }
+                className={`px-8 py-3 rounded-full font-bold transition-all
+                        ${
+                          isReady
+                            ? "bg-amber-500 hover:bg-amber-400 text-black shadow-[0_0_20px_rgba(245,158,11,0.5)]"
+                            : "bg-gray-800 text-gray-500 cursor-not-allowed"
+                        }
+                    `}
+              >
+                {isReady
+                  ? "Open Forever"
+                  : `${memoryCount}/12 Memories Collected`}
+              </button>
+
+              <button
+                onClick={() => setView("clock")}
+                className="mt-8 text-sm text-gray-500 hover:text-white"
+              >
+                Return to Clock
+              </button>
+            </div>
+          );
+        };
+
+        return (
+          <>
+            {view === "clock" && renderClockFace()}
+            {view === "portal" && renderPortalContent()}
+            {view === "finale" && renderFinale()}
+
+            <MemoryCapsule
+              isOpen={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
+              hour={activeHour}
+              theme={activeTheme}
+              memory={memories[activeHour]}
+              onSave={saveMemory}
+            />
+          </>
+        );
+      }
+
+      const root = createRoot(document.getElementById("root"));
+      root.render(<TimeTravelLoveCapsule />);
+    </script>
+  </body>
+</html>

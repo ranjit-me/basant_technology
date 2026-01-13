@@ -1,0 +1,17 @@
+{
+  "en": {
+    "hero.title": "Happy Birthday!",
+    "hero.msg": "Wishing you a day as wonderful as you are.",
+    "hero.button": "Celebrate Now"
+  },
+  "hi": {
+    "hero.title": "जन्मदिन की शुभकामनाएं!",
+    "hero.msg": "कामना है कि आपका दिन आपकी तरह ही शानदार हो।",
+    "hero.button": "अभी जश्न मनाएं"
+  },
+  "es": {
+    "hero.title": "¡Feliz Cumpleaños!",
+    "hero.msg": "Te deseo un día tan maravilloso como tú.",
+    "hero.button": "Celebrar Ahora"
+  }
+}
