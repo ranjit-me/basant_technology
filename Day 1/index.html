@@ -4,20 +4,106 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <!--Internal CSS-->
+    <style>
+      .one {
+        border: 2px solid black;
+        padding: 10px;
+        margin: 10px;
+        color: burlywood;
+      }
+      /*CSS for heading elements*/
+      h1 {
+        color: blue;
+      }
+      .headingh3 {
+        color: green;
+        background-color: violet;
+      }
+      #headingh4 {
+        color: orange;
+        background-color: lightgrey;
+      }
+    </style>
   </head>
   <body>
+    <!--Heading elements-->
     <h1>Hello World!</h1>
-    <h2>Hello World!</h2>
-    <h3>Hello World!</h3>
-    <h4>Hello World!</h4>
+    <!--inline styling-->
+    <h2 style="color: red">Hello World!</h2>
+    <h3 class="headingh3">Hello World!</h3>
+    <h4 id="headingh4">Hello World!</h4>
     <h5>Hello World!</h5>
     <h6>Hello World!</h6>
     <img
       src="https://ismg-cdn.nyc3.cdn.digitaloceanspaces.com/articles/sbi-investigates-reported-massive-data-leak-showcase_image-2-a-11986.jpg"
-      alt=""
+      alt="SBI Logo"
+      height="500"
+      width="600"
     />
+    <img src="bgremoved.png" alt="logo" height="500" width="600" />
     <br />
     <br />
     <a href="https://www.google.com" title="Google Page">Google</a>
+    <!--Para elements-->
+    <p>
+      <b>
+        <i>
+          <mark>
+            <strong>
+              <em>
+                <del>
+                  delete Strong mark italic bold em(emphasis text). storng=bold
+                  , italic=emphasis text
+                </del>
+              </em></strong
+            ></mark
+          >
+        </i>
+      </b>
+    </p>
+    <p>i have a <del>text</del><ins> sentence</ins></p>
+    <p>i have a ("subText") <sub>sentennce</sub></p>
+    <p>i have a ("SuperText")<sup>sentennce</sup></p>
+    <br />
+    <br />
+    <!--List elements-->
+    <h2>Ordered List</h2>
+    <ol>
+      <li>First Item</li>
+      <li>Second Item</li>
+      <li>Third Item</li>
+    </ol>
+    <h2>Unordered List</h2>
+    <ul>
+      <li>First Item</li>
+      <li>Second Item</li>
+      <li>Third Item</li>
+    </ul>
+    <!--Table elements-->
+    <h2>Student Info</h2>
+    <table border="2">
+      <tr>
+        <th>Name</th>
+        <th>Roll-No</th>
+        <th>Mobile-No</th>
+      </tr>
+      <tr>
+        <td>Ranjit</td>
+        <td>205</td>
+        <td>1234567890</td>
+      </tr>
+      <tr>
+        <td>Prathamesh</td>
+        <td>206</td>
+        <td>0987654321</td>
+      </tr>
+    </table>
+    <div class="one">
+      <h1>heading1</h1>
+      <h2>Heading2</h2>
+      <p>this is para</p>
+    </div>
   </body>
+  <footer>&copy; 2024 Ranjit Pawar</footer>
 </html>
