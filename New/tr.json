@@ -1,0 +1,80 @@
+{
+  "en": {
+    "main_title": "Surprise Your Loved Ones!",
+    "description": "Create a personalized digital experience that they will cherish forever.",
+    "gift_button": "Send a Gift",
+    "footer_text": "Made with lots of love."
+  },
+  "zh": {
+    "main_title": "给你的亲人一个惊喜！",
+    "description": "打造他们将永远珍藏的个性化数字体验。",
+    "gift_button": "送礼物",
+    "footer_text": "倾注了满满的爱意。"
+  },
+  "hi": {
+    "main_title": "अपने प्रियजनों को सरप्राइज दें!",
+    "description": "एक ऐसा व्यक्तिगत डिजिटल अनुभव बनाएं जिसे वे हमेशा संजोकर रखेंगे।",
+    "gift_button": "उपहार भेजें",
+    "footer_text": "बहुत प्यार से बनाया गया।"
+  },
+  "es": {
+    "main_title": "¡Sorprende a tus seres queridos!",
+    "description": "Cree una experiencia digital personalizada que atesorarán por siempre.",
+    "gift_button": "Enviar un regalo",
+    "footer_text": "Hecho con mucho amor."
+  },
+  "fr": {
+    "main_title": "Surprenez vos proches !",
+    "description": "Créez une expérience numérique personnalisée qu'ils chériront à jamais.",
+    "gift_button": "Envoyer un cadeau",
+    "footer_text": "Fait avec beaucoup d'amour."
+  },
+  "ar": {
+    "main_title": "فاجئ أحبائك!",
+    "description": "ابتكر تجربة رقمية شخصية سيحتفظون بها إلى الأبد.",
+    "gift_button": "أرسل هدية",
+    "footer_text": "صُنع بكل حب."
+  },
+  "bn": {
+    "main_title": "আপনার প্রিয়জনদের অবাক করে দিন!",
+    "description": "একটি ব্যক্তিগতকৃত ডিজিটাল অভিজ্ঞতা তৈরি করুন যা তারা চিরকাল লালন করবে।",
+    "gift_button": "উপহার পাঠান",
+    "footer_text": "অনেক ভালোবাসা দিয়ে তৈরি।"
+  },
+  "pt": {
+    "main_title": "Surpreenda seus entes queridos!",
+    "description": "Crie uma experiência digital personalizada que eles guardarão para sempre.",
+    "gift_button": "Enviar um presente",
+    "footer_text": "Feito com muito amor."
+  },
+  "ru": {
+    "main_title": "Удивите своих близких!",
+    "description": "Создайте персонализированный цифровой опыт, который они будут ценить всю жизнь.",
+    "gift_button": "Отправить подарок",
+    "footer_text": "Сделано с большой любовью."
+  },
+  "ur": {
+    "main_title": "اپنے پیاروں کو سرپرائز کریں!",
+    "description": "ایک ذاتی نوعیت کا ڈیجیٹل تجربہ بنائیں جسے وہ ہمیشہ پسند کریں گے۔",
+    "gift_button": "ایک تحفہ بھیجیں۔",
+    "footer_text": "ڈھیروں پیار سے بنایا۔"
+  },
+  "id": {
+    "main_title": "Berikan Kejutan kepada Orang yang Anda Cintai!",
+    "description": "Ciptakan pengalaman digital yang dipersonalisasi yang akan mereka kenang selamanya.",
+    "gift_button": "Kirim Hadiah",
+    "footer_text": "Dibuat dengan penuh cinta."
+  },
+  "de": {
+    "main_title": "Überraschen Sie Ihre Liebsten!",
+    "description": "Schaffen Sie ein personalisiertes digitales Erlebnis, das sie für immer in Erinnerung behalten werden.",
+    "gift_button": "Geschenk senden",
+    "footer_text": "Mit viel Liebe gemacht."
+  },
+  "mr": {
+    "main_title": "तुमच्या प्रियजनांना आश्चर्यचकित करा!",
+    "description": "एक वैयक्तिकृत डिजिटल अनुभव तयार करा जो त्यांना कायमचा जपून ठेवेल.",
+    "gift_button": "भेट पाठवा",
+    "footer_text": "खूप प्रेमाने बनवलेले."
+  }
+}

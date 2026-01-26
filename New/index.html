@@ -1,0 +1,73 @@
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero-section {
+    background: #ffffff;
+    padding: 40px 30px;
+    border-radius: 16px;
+    text-align: center;
+    max-width: 420px;
+    width: 90%;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  .hero-section h1 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 15px;
+  }
+
+  .hero-section p {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 30px;
+    line-height: 1.6;
+  }
+
+  .hero-section button {
+    background: linear-gradient(135deg, #ff6a88, #ff99ac);
+    color: #fff;
+    border: none;
+    padding: 12px 28px;
+    font-size: 1rem;
+    border-radius: 30px;
+    cursor: pointer;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .hero-section button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255, 106, 136, 0.4);
+  }
+
+  .footer {
+    margin-top: 25px;
+    font-size: 0.85rem;
+    color: #999;
+  }
+</style>
+
+<div class="hero-section">
+  <h1 data-i18n="main_title">Surprise Your Loved Ones!</h1>
+
+  <p data-i18n="description">
+    Create a personalized digital experience that they will cherish forever.
+  </p>
+
+  <button data-i18n="gift_button">Send a Gift</button>
+
+  <div class="footer">
+    <span data-i18n="footer_text">Made with lots of love.</span>
+  </div>
+</div>
