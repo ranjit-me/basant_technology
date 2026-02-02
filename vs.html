@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ETAP SLD Data Collection Tool</title>
+    <style>
+      /* --- CSS Reset & Base Styles --- */
+      :root {
+        --primary-blue: #0066cc;
+        --primary-hover: #0052a3;
+        --border-color: #d1d5db;
+        --bg-light: #f3f4f6;
+        --text-main: #1f2937;
+        --text-muted: #6b7280;
+        --white: #ffffff;
+        --input-bg: #f9fafb;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Inter", "Roboto", "Segoe UI", sans-serif;
+        background-color: var(--bg-light);
+        color: var(--text-main);
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* --- Header --- */
+      header {
+        background-color: var(--white);
+        border-bottom: 1px solid var(--border-color);
+        padding: 12px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-shrink: 0;
+      }
+
+      .header-left h1 {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 4px;
+      }
+
+      .header-left p {
+        font-size: 13px;
+        color: var(--text-muted);
+      }
+
+      .btn-export {
+        background-color: var(--white);
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+        padding: 8px 16px;
+        font-size: 13px;
+        font-weight: 500;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .btn-export:hover {
+        background-color: var(--bg-light);
+      }
+
+      /* --- Info Strip --- */
+      .info-strip {
+        background-color: #e5e7eb;
+        border-bottom: 1px solid var(--border-color);
+        padding: 8px 24px;
+        display: flex;
+        gap: 24px;
+        font-size: 13px;
+        color: var(--text-main);
+        flex-shrink: 0;
+      }
+
+      .info-item span {
+        font-weight: 600;
+        margin-left: 4px;
+      }
+
+      /* --- Main Layout --- */
+      .main-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 30px;
+        overflow-y: auto;
+      }
+
+      /* --- Stepper --- */
+      .stepper-container {
+        width: 100%;
+        max-width: 800px;
+        margin-bottom: 30px;
+      }
+
+      .stepper {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+      }
+
+      /* Connecting Line */
+      .stepper::before {
+        content: "";
+        position: absolute;
+        top: 14px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background-color: #e5e7eb;
+        z-index: 1;
+      }
+
+      .step-item {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 25%;
+        text-align: center;
+        cursor: pointer; /* Clickable now */
+      }
+
+      .step-circle {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: var(--white);
+        border: 2px solid #e5e7eb;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        transition: all 0.3s;
+      }
+
+      .step-label {
+        font-size: 12px;
+        color: var(--text-muted);
+        font-weight: 500;
+      }
+
+      /* Active/Completed Step Styles */
+      .step-item.active .step-circle {
+        background-color: var(--primary-blue);
+        border-color: var(--primary-blue);
+        color: var(--white);
+      }
+
+      .step-item.active .step-label {
+        color: var(--primary-blue);
+        font-weight: 600;
+      }
+
+      /* --- Form Card --- */
+      .form-card {
+        background-color: var(--white);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        width: 100%;
+        max-width: 800px;
+        padding: 30px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        display: none;
+      }
+
+      .form-card.active-card {
+        display: block;
+        animation: fadeIn 0.3s ease-in-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(5px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .card-header {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 24px;
+        border-bottom: 1px solid #f3f4f6;
+        padding-bottom: 12px;
+        color: var(--text-main);
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .full-width {
+        grid-column: span 2;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .form-group label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+      }
+
+      /* Updated Select Styles */
+      .form-group select,
+      .form-group input {
+        background-color: var(--white);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 10px 12px;
+        font-size: 14px;
+        color: var(--text-main);
+        font-family: inherit;
+        outline: none;
+        cursor: pointer;
+        transition: border-color 0.2s;
+        appearance: none; /* Removes default OS arrow */
+        background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%231f2937%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px top 50%;
+        background-size: 10px auto;
+        padding-right: 30px;
+      }
+
+      .form-group select:focus,
+      .form-group input:focus {
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.1);
+      }
+
+      /* --- Footer & Buttons --- */
+      .card-footer {
+        display: flex;
+        justify-content: flex-end; /* Align right */
+        gap: 12px; /* Space between Back and Next */
+        border-top: 1px solid #f3f4f6;
+        padding-top: 20px;
+      }
+
+      .btn-primary {
+        background-color: var(--primary-blue);
+        color: var(--white);
+        border: none;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .btn-primary:hover {
+        background-color: var(--primary-hover);
+      }
+
+      .btn-secondary {
+        background-color: var(--white);
+        color: var(--text-main);
+        border: 1px solid var(--border-color);
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .btn-secondary:hover {
+        background-color: var(--bg-light);
+        border-color: #9ca3af;
+      }
+
+      /* --- Status Bar --- */
+      .status-bar {
+        background-color: var(--white);
+        border-top: 1px solid var(--border-color);
+        padding: 6px 24px;
+        font-size: 12px;
+        color: var(--text-muted);
+        display: flex;
+        gap: 20px;
+        flex-shrink: 0;
+      }
+
+      .status-bar strong {
+        color: var(--text-main);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-left">
+        <h1>ETAP SLD Data Collection Tool</h1>
+        <p>Multi Step Data Collection – Feeder Information</p>
+      </div>
+      <button class="btn-export">Export to Excel</button>
+    </header>
+
+    <div class="info-strip">
+      <div class="info-item">Panel Name: <span>LT Panel</span></div>
+      <div class="info-item">Total Panels: <span>3</span></div>
+      <div class="info-item">Feeders in Panel: <span>3</span></div>
+      <div class="info-item">Current Feeder: <span>Feeder 1</span></div>
+      <div class="info-item">
+        Step Indicator: <span id="strip-step">Step 1 of 4</span>
+      </div>
+    </div>
+
+    <div class="main-container">
+      <div class="stepper-container">
+        <div class="stepper">
+          <div class="step-item active" id="step-nav-1" onclick="goToStep(1)">
+            <div class="step-circle">1</div>
+            <div class="step-label">Feeder Info</div>
+          </div>
+          <div class="step-item" id="step-nav-2" onclick="goToStep(2)">
+            <div class="step-circle">2</div>
+            <div class="step-label">Circuit Breaker</div>
+          </div>
+          <div class="step-item" id="step-nav-3" onclick="goToStep(3)">
+            <div class="step-circle">3</div>
+            <div class="step-label">Cable Info</div>
+          </div>
+          <div class="step-item" id="step-nav-4" onclick="goToStep(4)">
+            <div class="step-circle">4</div>
+            <div class="step-label">Load Info</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 1: Feeder Info -->
+      <div class="form-card active-card" id="card-step-1">
+        <div class="card-header">Step 1: Feeder Information</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Feeder Number</label>
+            <select>
+              <option selected>FDR-01</option>
+              <option>FDR-02</option>
+              <option>FDR-03</option>
+              <option>FDR-04</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Feeder Name</label>
+            <select>
+              <option selected>Lighting Feeder</option>
+              <option>Power Feeder</option>
+              <option>HVAC Feeder</option>
+              <option>Spare Feeder</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>From Panel</label>
+            <select>
+              <option selected>LT Panel</option>
+              <option>Main PCC</option>
+              <option>Emergency Panel</option>
+              <option>DG Panel</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>To Equipment / Load</label>
+            <select>
+              <option selected>Lighting Distribution Board</option>
+              <option>Motor Control Center 1</option>
+              <option>AHU Panel</option>
+              <option>Sub-Distribution Board A</option>
+            </select>
+          </div>
+        </div>
+        <div class="card-footer">
+          <!-- Step 1 has no Back button -->
+          <button class="btn-primary" onclick="goToStep(2)">
+            Next → Circuit Breaker Info
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Circuit Breaker Info -->
+      <div class="form-card" id="card-step-2">
+        <div class="card-header">Step 2: Circuit Breaker Information</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Circuit Breaker Type</label>
+            <select>
+              <option selected>ACB</option>
+              <option>MCCB</option>
+              <option>VCB</option>
+              <option>MCB</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Manufacturer Name</label>
+            <select>
+              <option selected>Siemens</option>
+              <option>Schneider Electric</option>
+              <option>ABB</option>
+              <option>L&T</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Model Number</label>
+            <select>
+              <option selected>3WL1263</option>
+              <option>3WL1000</option>
+              <option>3WL2000</option>
+              <option>Sentinel 500</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Rated Current (A)</label>
+            <select>
+              <option selected>630</option>
+              <option>800</option>
+              <option>1000</option>
+              <option>1250</option>
+              <option>1600</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Ui – Insulation Voltage (V)</label>
+            <select>
+              <option selected>1000</option>
+              <option>800</option>
+              <option>690</option>
+              <option>415</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Uimp – Impulse Voltage (kV)</label>
+            <select>
+              <option selected>12</option>
+              <option>8</option>
+              <option>6</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Ics – Service Breaking Capacity (kA)</label>
+            <select>
+              <option selected>50</option>
+              <option>35</option>
+              <option>65</option>
+              <option>85</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Icu – Ultimate Breaking Capacity (kA)</label>
+            <select>
+              <option selected>65</option>
+              <option>50</option>
+              <option>85</option>
+              <option>100</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Ir – Rated Current (A)</label>
+            <select>
+              <option selected>630</option>
+              <option>500</option>
+              <option>400</option>
+              <option>320</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Im – Maximum Current (A)</label>
+            <select>
+              <option selected>10000</option>
+              <option>8000</option>
+              <option>6000</option>
+              <option>12000</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Relay Model Number</label>
+            <select>
+              <option selected>ETU760</option>
+              <option>ETU450</option>
+              <option>ETU320</option>
+              <option>Micrologic 2.0</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Number of Poles</label>
+            <select>
+              <option selected>3</option>
+              <option>4</option>
+            </select>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button class="btn-secondary" onclick="goToStep(1)">← Back</button>
+          <button class="btn-primary" onclick="goToStep(3)">
+            Next → Cable Info
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Cable Info -->
+      <div class="form-card" id="card-step-3">
+        <div class="card-header">Step 3: Cable Information</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Cable Type</label>
+            <select>
+              <option selected>XLPE/PVC</option>
+              <option>PVC/PVC</option>
+              <option>PILC</option>
+              <option>Rubber</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Number of Runs</label>
+            <select>
+              <option selected>2</option>
+              <option>1</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Conductor Size (sqmm)</label>
+            <select>
+              <option selected>240</option>
+              <option>185</option>
+              <option>150</option>
+              <option>300</option>
+              <option>400</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Length (m)</label>
+            <select>
+              <option selected>50</option>
+              <option>25</option>
+              <option>75</option>
+              <option>100</option>
+              <option>150</option>
+            </select>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button class="btn-secondary" onclick="goToStep(2)">← Back</button>
+          <button class="btn-primary" onclick="goToStep(4)">
+            Next → Load Info
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 4: Load Info -->
+      <div class="form-card" id="card-step-4">
+        <div class="card-header">Step 4: Load Information</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Connected Load (kW)</label>
+            <select>
+              <option selected>45</option>
+              <option>30</option>
+              <option>50</option>
+              <option>75</option>
+              <option>100</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Demand Load (kW)</label>
+            <select>
+              <option selected>35</option>
+              <option>25</option>
+              <option>40</option>
+              <option>60</option>
+              <option>80</option>
+            </select>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button class="btn-secondary" onclick="goToStep(3)">← Back</button>
+          <button
+            class="btn-primary"
+            onclick="alert('Feeder Data Added Successfully!')"
+          >
+            Add Feeder Data
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="status-bar">
+      <div>Panel: <strong>LT Panel</strong></div>
+      <div>Feeder: <strong>FDR-01</strong></div>
+      <div>Step: <strong id="footer-step">1 / 4</strong></div>
+    </div>
+
+    <script>
+      function goToStep(stepNumber) {
+        // 1. Hide all cards
+        document.querySelectorAll(".form-card").forEach((card) => {
+          card.classList.remove("active-card");
+        });
+
+        // 2. Show target card
+        document
+          .getElementById(`card-step-${stepNumber}`)
+          .classList.add("active-card");
+
+        // 3. Update Stepper Visuals
+        for (let i = 1; i <= 4; i++) {
+          const navItem = document.getElementById(`step-nav-${i}`);
+          if (i <= stepNumber) {
+            navItem.classList.add("active");
+          } else {
+            navItem.classList.remove("active");
+          }
+        }
+
+        // 4. Update Text Labels
+        document.getElementById("strip-step").textContent =
+          `Step ${stepNumber} of 4`;
+        document.getElementById("footer-step").textContent =
+          `${stepNumber} / 4`;
+      }
+    </script>
+  </body>
+</html>
