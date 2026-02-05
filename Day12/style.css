@@ -1,0 +1,12 @@
+.cards {
+  display: inline-flex;
+  /* flex-wrap: wrap; */
+}
+/* .slids {
+  position: relative;
+}
+.buynow {
+  position: fixed;
+} */
+/* .nav {
+  background-color: black; */
