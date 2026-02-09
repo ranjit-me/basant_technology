@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+    <style>
+      .cities {
+        display: flex;
+        background-color: white;
+        padding: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main">
+      <!-- Button trigger modal -->
+      <button
+        type="button"
+        class="btn btn-primary"
+        data-bs-toggle="modal"
+        data-bs-target="#exampleModal"
+      >
+        Mumbai
+      </button>
+
+      <!-- Modal -->
+      <div
+        class="modal fade"
+        id="exampleModal"
+        tabindex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">
+                Popular Cities
+              </h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+
+            <div class="cities">
+              <div class="mumbai">
+                <img
+                  src="https://assets-in.bmscdn.com/m6/images/common-modules/regions/mumbai-selected.png"
+                  alt=""
+                />
+                <p>Mumbai</p>
+              </div>
+              <div class="delhi-ncr">
+                <img
+                  src="https://assets-in.bmscdn.com/m6/images/common-modules/regions/ncr.png"
+                  alt=""
+                />
+                <p>Delhi-Ncr</p>
+              </div>
+              <div class="bangalor">
+                <img
+                  src="https://assets-in.bmscdn.com/m6/images/common-modules/regions/bang.png"
+                  alt=""
+                />
+                <p>Bangalore</p>
+              </div>
+
+              <div class="hyderabad">
+                <img
+                  src="https://assets-in.bmscdn.com/m6/images/common-modules/regions/hyd.png"
+                  alt=""
+                />
+                <p>Hyderabad</p>
+              </div>
+              <div class="chandigarh">
+                <img
+                  src="https://assets-in.bmscdn.com/m6/images/common-modules/regions/chd.png"
+                  alt=""
+                />
+                <p>Chandigrah</p>
+              </div>
+              <!-- <div class="ahemedabad">
+                <img
+                  src="https://assets-in.bmscdn.com/m6/images/common-modules/regions/ahd.png"
+                  alt=""
+                />
+                <p>Ahemedabad</p>
+              </div>
+              <div class="pune">
+                <img
+                  src="https://assets-in.bmscdn.com/m6/images/common-modules/regions/pune.png"
+                  alt=""
+                />
+                <p>Pune</p>
+              </div>
+              <div class="chennai">
+                <img
+                  src="https://assets-in.bmscdn.com/m6/images/common-modules/regions/chen.png"
+                  alt=""
+                />
+                <p>Chennai</p>
+              </div>
+              <div class="kolkata">
+                <img
+                  src="https://assets-in.bmscdn.com/m6/images/common-modules/regions/kolk.png"
+                  alt=""
+                />
+                <p>Kolkata</p>
+              </div>
+              <div class="kochi">
+                <img
+                  src="https://assets-in.bmscdn.com/m6/images/common-modules/regions/koch.png"
+                  alt=""
+                />
+                <p>Kochi</p>
+              </div> -->
+            </div>
+            <div class="modal-body">view All Cities</div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <button type="button" class="btn btn-primary">
+                Save changes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
