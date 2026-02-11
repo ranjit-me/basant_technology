@@ -22,8 +22,28 @@
 
 /* 
     const learning
-    we can not reinital or declear again
+    we can't reinital or declear again
 */
-const name = "Ranjit";
-// name = "Johan Snow";
-console.log(name);
+// const name = "Ranjit";
+// // name = "Johan Snow";
+// console.log(name);
+
+// {
+//   let name = "David"; //let and const is block code.  var is a function scope or global scope
+//   console.log(name);
+//   const midname = "Jhon";
+//   var surname = "snow";
+// }
+// // console.log("Fist name", name);
+// console.log("LastName", surname);
+
+let final;
+/* 
+    let and var keyword initialization is optional
+    const keyword required initialization
+    Var	let	const
+Function scope	Block scope	Block scope
+Can be decleard	Can not be decleard	Can not be declared 
+Initial is oprional	Initial is optional 	Initial is manditory
+		
+*/
