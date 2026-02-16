@@ -25,6 +25,10 @@
         4)Relational Operator
 
         5)ternary Oprator 
+
+        6)Logical Operator
+            a)and &&
+            b)or  ||
 */
 
 console.log(5 + 3);
