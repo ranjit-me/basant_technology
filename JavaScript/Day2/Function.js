@@ -1,18 +1,18 @@
-// function sayHello() {
-//   console.log("Hi Function");
-// }
-// sayHello();
+function sayHello() {
+  console.log("Hi Function");
+}
+sayHello();
 
-// var sayhello = function () {
-//   console.log("Hi Function");
-// };
-// sayhello();
+var sayhello = function () {
+  console.log("Hi Function");
+};
+sayhello();
 
-// // function with argument
-// function getSalary(value) {
-//   console.log("Salary", value);
-// }
-// getSalary(12000);
+// function with argument
+function getSalary(value) {
+  console.log("Salary", value);
+}
+getSalary(12000);
 
 // function with return value
 

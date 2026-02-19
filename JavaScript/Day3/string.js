@@ -23,7 +23,7 @@ function luCase() {
   console.log(state.concat(" " + city));
 }
 
-function includeSearch() {
+function includeSearch(){
   let str = "i am in bangalore";
   console.log(str.includes("am"));
   console.log(str.search("am"));

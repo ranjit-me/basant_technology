@@ -35,8 +35,8 @@ function patt5() {
   }
 }
 
-// pattern1();
-// pattern2();
-// patt3();
+pattern1();
+
+patt3();
 patt4();
-// patt5();
+patt5();

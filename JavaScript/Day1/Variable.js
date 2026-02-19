@@ -5,12 +5,12 @@
     const
     variables can be reintialsed and declerd
 */
-// var num = 12;
-// var num2 = 9;
-// var name = "Ranjit";
-// var sum = num + num2;
-// name = "sham";
-// console.log("My name :-" + name + "   " + "Age:-" + num);
+var num = 12;
+var num2 = 9;
+var name = "Ranjit";
+var sum = num + num2;
+name = "sham";
+console.log("My name :-" + name + "   " + "Age:-" + num);
 
 /*
     let learning
@@ -28,14 +28,14 @@
 // // name = "Johan Snow";
 // console.log(name);
 
-// {
+// // {
 //   let name = "David"; //let and const is block code.  var is a function scope or global scope
 //   console.log(name);
 //   const midname = "Jhon";
 //   var surname = "snow";
 // }
-// // console.log("Fist name", name);
-// console.log("LastName", surname);
+// console.log("Fist name", name);
+console.log("LastName", surname);
 
 let final;
 /* 
