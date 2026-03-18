@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script>
+      function speeding() {
+        let speed = 0;
+        return {
+          acceleration: function () {
+            speed += 10;
+            return speed;
+          },
+          break: function () {
+            speed = speed - 5;
+            return speed;
+          },
+        };
+      }
+      let data = speeding();
+      let statement = "";
+      function breaks() {
+        let value = data.break();
+        statement = `i am driving at speed ${value}`;
+        document.getElementById("action").innerHTML = statement;
+      }
+      function accelerate() {
+        let value = data.acceleration();
+        statement = `i am driving at speed ${value}`;
+        document.getElementById("action").innerHTML = statement;
+      }
+    </script>
+  </head>
+  <body>
+    <h1>My first action in html</h1>
+    <h3 id="action"></h3>
+    <button onclick="breaks()">Break</button>
+    <button onclick="accelerate()">Acceleration</button>
+  </body>
+</html>
