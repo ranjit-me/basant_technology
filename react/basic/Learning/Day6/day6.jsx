@@ -1,9 +1,11 @@
 import React from "react";
-
+import Change from "./change";
+import Account from "./Account";
 const Day6 = () => {
   return (
     <div>
-      <h1>Hello</h1>
+      {/* <Change /> */}
+      <Account />
     </div>
   );
 };

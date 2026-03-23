@@ -6,6 +6,7 @@ import MovieBooking from "./Day3/MovieBooking";
 import Day4 from "./Day4/Day4";
 import Day5 from "./Day5/day5";
 import Day6 from "./Day6/day6";
+import Day7 from "./Day7/day7";
 const PropRoute = () => {
   const students = [
     { name: "Ranjit", age: "20", isStudent: true },
@@ -100,6 +101,7 @@ const PropRoute = () => {
         <Route path="/dayfour" element={<Day4 />} />
         <Route path="/dayfive" element={<Day5 />} />
         <Route path="/daysix" element={<Day6 />} />
+        <Route path="/dayseven" element={<Day7 />} />
       </Routes>
     </div>
   );
