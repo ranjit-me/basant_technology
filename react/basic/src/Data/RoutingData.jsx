@@ -13,7 +13,7 @@ import Home from "../Home/Home";
 import Day9 from "../Learning/HOC/Day9";
 import Todo from "../Projects/Todo/TodoIndex";
 import Api from "../Learning/Api/Api";
-import Mounting from "../Learning/ReactLifeCycle/Mounting";
+import Mounting from "../Learning/ReactLifeCycle/LifeCycle";
 export const routingdata = [
   {
     path: "/",
